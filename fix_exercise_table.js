@@ -17,6 +17,12 @@ if (!fs.existsSync("./source_files")) {
 
 if (!fs.existsSync("./result_files")) {
   fs.mkdirSync("./result_files");
+  if (!fs.existsSync("./result_files/photos")) {
+    fs.mkdirSync("./result_files/photos");
+  }
+  if (!fs.existsSync("./result_files/videos")) {
+    fs.mkdirSync("./result_files/videos");
+  }
 }
 // progress store file
 const ProgFile = "exercise-prog.txt";
@@ -54,8 +60,8 @@ async function main() {
       },
       data: {
         eng_title: row.name,
-        image: handleMedia(imageFileName, row.id, "photo"),
-        video: handleMedia(videoFileName, row.id, "video"),
+        image: handleMedia(imageFileName, row.our_system_id, "photo"),
+        video: handleMedia(videoFileName, row.our_system_id, "video"),
         primaryMuscles: arrayToCommaSpread(row.targetMuscles),
         secondaryMuscles: arrayToCommaSpread(row.synergistMuscles),
         equipment: arrayToCommaSpread(row.equipment),
@@ -108,13 +114,20 @@ async function loadExcel() {
 
 function handleMedia(fileName, id, type) {
   let prefix = "";
-  if (type == "photo") prefix = "/files/exercise/images/";
-  if (type == "video") prefix = "/files/exercise/videos/";
+  let subFolder = "";
+  if (type == "photo") {
+    prefix = "/files/exercise/images/";
+    subFolder = "photos";
+  }
+  if (type == "video") {
+    prefix = "/files/exercise/videos/";
+    subFolder = "videos";
+  }
   if (fs.existsSync(path.join("source_files", fileName))) {
     const newFileName = `${id}.${fileName.split(".").pop()}`;
     fs.cpSync(
       path.join("source_files", fileName),
-      path.join("result_files", newFileName)
+      path.join("result_files", subFolder, newFileName)
     );
     return prefix + newFileName;
   } else {
