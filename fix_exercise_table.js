@@ -1,6 +1,8 @@
 const ExcelJS = require("exceljs");
 const fs = require("fs");
 const { prisma } = require("./db");
+const { hyperLinkToFileName, arrayToCommaSpread } = require("./functions");
+const path = require("path");
 const inputFile = "input.xlsx";
 
 if (!fs.existsSync(inputFile)) {
@@ -8,6 +10,14 @@ if (!fs.existsSync(inputFile)) {
   process.exit(0);
 }
 
+if (!fs.existsSync("./source_files")) {
+  console.log("./source_files directory not found");
+  process.exit(1);
+}
+
+if (!fs.existsSync("./result_files")) {
+  fs.mkdirSync("./result_files");
+}
 // progress store file
 const ProgFile = "exercise-prog.txt";
 let progIdx = 0;
@@ -35,14 +45,17 @@ async function main() {
       return;
     }
 
+    const imageFileName = hyperLinkToFileName(row.image_name);
+    const videoFileName = hyperLinkToFileName(row.video_file);
+
     await prisma.exercise.update({
       where: {
         id: row.our_system_id,
       },
       data: {
         eng_title: row.name,
-        image: hyperLinkToUrl(row.image_name, "/files/exercise/images/"),
-        video: hyperLinkToUrl(row.video_file, "/files/exercise/videos/"),
+        image: handleMedia(imageFileName, row.id, "photo"),
+        video: handleMedia(videoFileName, row.id, "video"),
         primaryMuscles: arrayToCommaSpread(row.targetMuscles),
         secondaryMuscles: arrayToCommaSpread(row.synergistMuscles),
         equipment: arrayToCommaSpread(row.equipment),
@@ -93,26 +106,18 @@ async function loadExcel() {
   rows = jsonData;
 }
 
-function arrayToCommaSpread(input) {
-  const arr = JSON.parse(input);
-  let str = "";
-  arr.forEach((element, idx) => {
-    if (element && element.length > 0) {
-      if (idx < arr.length - 1) str += element + ",";
-      else str += element;
-    }
-  });
-  return str;
-}
-
-function hyperLinkToUrl(input, prefix) {
-  if (!input) return undefined;
-
-  if (typeof input == "object") {
-    return `${prefix}${input.text.split("/").pop()}`;
+function handleMedia(fileName, id, type) {
+  let prefix = "";
+  if (type == "photo") prefix = "/files/exercise/images/";
+  if (type == "video") prefix = "/files/exercise/videos/";
+  if (fs.existsSync(path.join("source_files", fileName))) {
+    const newFileName = `${id}.${fileName.split(".").pop()}`;
+    fs.cpSync(
+      path.join("source_files", fileName),
+      path.join("result_files", newFileName)
+    );
+    return prefix + newFileName;
+  } else {
+    return null;
   }
-  if (typeof input == "string") {
-    return `${prefix}${input.split("/").pop()}`;
-  }
-  return undefined;
 }
