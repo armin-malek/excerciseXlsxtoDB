@@ -79,7 +79,8 @@ async function main() {
 
 // start the script
 loadExcel().then(() => {
-  main();
+  console.log("rows", rows.length);
+  // main();
 });
 
 async function loadExcel() {
@@ -101,13 +102,13 @@ async function loadExcel() {
     jsonData.push(rowData);
   });
 
-  console.log(jsonData.length);
-  console.log(jsonData[0]);
+  // console.log(jsonData.length);
+  // console.log(jsonData[0]);
 
   // filterout rows with out system id
   jsonData = jsonData.filter((x) => x.our_system_id > 0);
-  console.log(jsonData.length);
-  console.log(jsonData[0]);
+  // console.log(jsonData.length);
+  // console.log(jsonData[0]);
 
   rows = jsonData;
 }

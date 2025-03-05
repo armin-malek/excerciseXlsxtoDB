@@ -20,6 +20,7 @@ function hyperLinkToFileName(input) {
 }
 
 function arrayToCommaSpread(input) {
+  console.log("input", input);
   const arr = JSON.parse(input);
   let str = "";
   arr.forEach((element, idx) => {

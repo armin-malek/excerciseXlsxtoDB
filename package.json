@@ -11,7 +11,9 @@
   "license": "ISC",
   "dependencies": {
     "@prisma/client": "^6.4.1",
+    "bluebird": "^3.7.2",
     "dotenv": "^16.4.7",
-    "exceljs": "^4.4.0"
+    "exceljs": "^4.4.0",
+    "lodash": "^4.17.21"
   }
 }
