@@ -95,3 +95,9 @@ model exercise_day {
 
   @@index([programId], map: "FK_5b2997088d8524d3e3963cd344e")
 }
+
+model action_id_replace_table {
+  id    Int @id @default(autoincrement())
+  oldId Int
+  newId Int
+}
