@@ -31,5 +31,27 @@ function arrayToCommaSpread(input) {
   });
   return str;
 }
+function isJsonString(str) {
+  try {
+    JSON.parse(str);
+  } catch (e) {
+    return false;
+  }
+  return true;
+}
 
-module.exports = { toSnakeCase, hyperLinkToFileName, arrayToCommaSpread };
+function isIterable(obj) {
+  // checks for null and undefined
+  if (obj == null) {
+    return false;
+  }
+  return typeof obj[Symbol.iterator] === "function";
+}
+
+module.exports = {
+  toSnakeCase,
+  hyperLinkToFileName,
+  arrayToCommaSpread,
+  isJsonString,
+  isIterable,
+};

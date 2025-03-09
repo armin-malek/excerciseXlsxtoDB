@@ -1,5 +1,6 @@
 const { prisma } = require("./db");
 const _ = require("lodash");
+const { isJsonString } = require("./functions");
 let lastId = 0;
 
 const baseTables = [
@@ -134,12 +135,3 @@ const startTime = Date.now();
 loadRecords().then(() => {
   main();
 });
-
-function isJsonString(str) {
-  try {
-    JSON.parse(str);
-  } catch (e) {
-    return false;
-  }
-  return true;
-}
