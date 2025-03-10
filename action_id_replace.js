@@ -12,6 +12,8 @@ const baseTables = [
 
 let records = {};
 let exercises = [];
+let replacingLists = [];
+let replacingIdx = 0;
 async function loadRecords() {
   for (let table of baseTables) {
     records[table[0]] = [];
@@ -34,16 +36,19 @@ async function loadRecords() {
   }
 
   exercises = await prisma.exercise.findMany();
+  replacingLists = await prisma.action_id_replace_table.findMany({
+    // where: { id: { gt: lastId } },
+    // where: { oldId: 2031 },
+    orderBy: { id: "asc" },
+  });
+
+  console.log("Data loaded");
 }
 async function main() {
   try {
-    const replacingList = await prisma.action_id_replace_table.findFirst({
-      where: { id: { gt: lastId } },
-      // where: { oldId: 2031 },
-      orderBy: { id: "asc" },
-    });
+    const replacingList = replacingLists[replacingIdx];
 
-    if (!replacingList) {
+    if (replacingIdx > replacingLists.length - 1) {
       console.log("Done", Date.now() - startTime);
       process.exit(1);
     }
@@ -58,7 +63,7 @@ async function main() {
         //   //   continue;
         //   record.data = JSON.parse(record.data);
         // }
-        let newData = [];
+        const newData = [];
         if (!isIterable(record.data)) {
           console.log("no array", record.data);
           newData.push(record.data);
@@ -75,6 +80,9 @@ async function main() {
             }
             for (let movement of r.movement_list) {
               // console.log(movement.action_id);
+              // if (replacingList.oldId == 2055) {
+              //   // console.log("hehe");
+              // }
               if (movement.action_id == replacingList.oldId) {
                 console.log("found", movement.action_id);
                 //   templatesFound.push(record[table[1]].toString());
@@ -89,13 +97,14 @@ async function main() {
                   continue;
                 }
 
-                newMovementList.push({
+                let obj = {
                   ...movement,
                   action_title: newMovement.title,
                   action_id: newMovement.id,
                   action_video_ur: newMovement.video,
                   action_pic_url: newMovement.image,
-                });
+                };
+                newMovementList.push(obj);
               } else {
                 // console.log("not found");
                 newMovementList.push(movement);
@@ -111,6 +120,9 @@ async function main() {
               ...r,
               movement_list: newMovementList,
             });
+            // console.log(newData);
+            // console.log("out");
+
             //   await prisma[table[0]].update({
             //     where: { id: record.id },
             //     data: {
@@ -125,6 +137,7 @@ async function main() {
 
         // const dbTime = Date.now();
         let json = JSON.stringify(newData);
+
         await prisma[table[0]].update({
           where: { id: record.id },
           data: {
@@ -154,6 +167,7 @@ async function main() {
     process.exit(1);
   } finally {
     // console.log("finally");
+    replacingIdx++;
     main();
   }
 }
