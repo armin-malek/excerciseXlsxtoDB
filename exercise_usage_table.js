@@ -4,10 +4,10 @@ const { isJsonString } = require("./functions");
 let lastId = 0;
 
 const baseTables = [
-  ["exercise_template_day", "templateId"],
+  // ["exercise_template_day", "templateId"],
   ["exercise_day", "programId"],
-  ["corrective_template_day", "templateId"],
-  ["corrective_day", "programId"],
+  // ["corrective_template_day", "templateId"],
+  // ["corrective_day", "programId"],
 ];
 
 let records = {};
@@ -26,6 +26,11 @@ async function loadRecords() {
 }
 async function main() {
   try {
+    if (lastId > 45) {
+      console.log("hard limit reached!");
+      process.exit(1);
+    }
+
     const exercise = await prisma.exercise.findFirst({
       select: { id: true, title: true, video: true, image: true },
       where: { id: { gt: lastId } },
