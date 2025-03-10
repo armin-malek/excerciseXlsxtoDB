@@ -4,37 +4,43 @@ const { isJsonString } = require("./functions");
 let lastId = 0;
 
 const baseTables = [
-  // ["exercise_template_day", "templateId"],
-  ["exercise_day", "programId"],
+  ["exercise_template_day", "templateId"],
+  // ["exercise_day", "programId"],
   // ["corrective_template_day", "templateId"],
   // ["corrective_day", "programId"],
 ];
 
 let records = {};
 
+const startTime = Date.now();
+
 async function loadRecords() {
   for (let table of baseTables) {
-    records[table[0]] = await prisma[table[0]].findMany({
+    records[table[0]] = [];
+    let recs = await prisma[table[0]].findMany({
       orderBy: { id: "asc" },
       select: {
         [table[1]]: true,
         data: true,
       },
     });
+
+    for (let i = 0; i < recs.length; i++) {
+      if (isJsonString(recs[i].data)) {
+        recs[i].data = JSON.parse(recs[i].data);
+      }
+      records[table[0]].push(recs[i]);
+    }
+
     console.log(`table ${table[0]} records ${records[table[0]].length}`);
   }
 }
 async function main() {
   try {
-    if (lastId > 45) {
-      console.log("hard limit reached!");
-      process.exit(1);
-    }
-
     const exercise = await prisma.exercise.findFirst({
       select: { id: true, title: true, video: true, image: true },
       where: { id: { gt: lastId } },
-      //   where: { id: 1663 },
+      // where: { id: 2031 },
       orderBy: { id: "asc" },
     });
 
@@ -51,14 +57,14 @@ async function main() {
       let templatesFound = [];
       for (let record of records[table[0]]) {
         // console.log(record);
-        if (isJsonString(record.data)) {
-          //   console.log(record);
-          //   continue;
-          record.data = JSON.parse(record.data);
-        }
+        // if (isJsonString(record.data)) {
+
+        //   record.data = JSON.parse(record.data);
+        // }
         record.data.forEach((item) => {
           item.movement_list.forEach((movement) => {
             if (movement.action_id == exercise.id) {
+              // console.log("push");
               templatesFound.push(record[table[1]].toString());
             }
           });
@@ -74,15 +80,19 @@ async function main() {
           exercise_id: exercise.id,
         },
       });
-      //   console.log("existingReport", existingReport);
+      // console.log("existingReport", existingReport);
 
       if (existingReport) {
         let templatesList = _.uniq([
-          ...existingReport[`${table[0]}_list`].split(","),
+          // ...existingReport[`${table[0]}_list`].split(","),
           ...templatesFound,
         ]);
         if (templatesList.length == 1 && templatesList[0] == "")
           templatesList = [];
+
+        // if (templatesList.length < 5) {
+        //   console.log("templatesFound 1", templatesList.length, templatesList);
+        // }
 
         await prisma.exercise_usage_report.update({
           where: { id: existingReport.id },
@@ -93,6 +103,10 @@ async function main() {
         });
       } else {
         const templatesList = _.uniq(templatesFound);
+
+        // if (templatesList.length < 5) {
+        //   console.log("templatesFound 2", templatesList.length, templatesList);
+        // }
         await prisma.exercise_usage_report.create({
           data: {
             exercise_id: exercise.id,
@@ -135,7 +149,6 @@ function arrayToCommaSpread(input) {
   });
   return str;
 }
-const startTime = Date.now();
 
 loadRecords().then(() => {
   main();
