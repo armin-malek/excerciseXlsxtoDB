@@ -1,3 +1,5 @@
+const ExcelJS = require("exceljs");
+
 function toSnakeCase(str) {
   return str
     .trim() // Remove extra spaces
@@ -48,10 +50,34 @@ function isIterable(obj) {
   return typeof obj[Symbol.iterator] === "function";
 }
 
+async function convertExcelToJson(filePath) {
+  const workbook = new ExcelJS.Workbook();
+  await workbook.xlsx.readFile(filePath);
+  const worksheet = workbook.worksheets[0]; // Get the first sheet
+
+  let jsonData = [];
+  let headers = [];
+
+  worksheet.eachRow((row, rowNumber) => {
+    if (rowNumber === 1) {
+      headers = row.values.slice(1); // Get headers from the first row
+    } else {
+      let rowData = {};
+      row.values.slice(1).forEach((cell, colIndex) => {
+        rowData[headers[colIndex]] = cell;
+      });
+      jsonData.push(rowData);
+    }
+  });
+
+  return jsonData;
+}
+
 module.exports = {
   toSnakeCase,
   hyperLinkToFileName,
   arrayToCommaSpread,
   isJsonString,
   isIterable,
+  convertExcelToJson,
 };
