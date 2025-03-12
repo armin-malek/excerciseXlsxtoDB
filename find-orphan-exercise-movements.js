@@ -17,7 +17,6 @@ const startTime = Date.now();
 async function loadRecords() {
   for (let table of baseTables) {
     records[table[0]] = [];
-    // records[table[0]] = await prisma[table[0]].findMany({
     let recs = await prisma[table[0]].findMany({
       orderBy: { id: "asc" },
       select: {
@@ -60,7 +59,6 @@ async function main() {
         });
       }
       console.log(`table ${table[0]} orphans`, orphanActionIdList.length);
-      // process.exit(1);
 
       await prisma.orphan_movement_list.createMany({
         data: orphanActionIdList,

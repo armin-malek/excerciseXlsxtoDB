@@ -50,49 +50,27 @@ async function main() {
     }
 
     for (let table of baseTables) {
-      // await Promise.map(
-      //   baseTables,
-      //   async (table) => {
-      //   console.log(`starting table ${table[0]}`);
       let templatesFound = [];
       for (let record of records[table[0]]) {
-        // console.log(record);
-        // if (isJsonString(record.data)) {
-
-        //   record.data = JSON.parse(record.data);
-        // }
         record.data.forEach((item) => {
           item.movement_list.forEach((movement) => {
             if (movement.action_id == exercise.id) {
-              // console.log("push");
               templatesFound.push(record[table[1]].toString());
             }
           });
         });
       }
-      // console.log("templatesFound", templatesFound);
 
-      // if (templatesFound.length == 0) {
-      //   return;
-      // }
       const existingReport = await prisma.exercise_usage_report.findUnique({
         where: {
           exercise_id: exercise.id,
         },
       });
-      // console.log("existingReport", existingReport);
 
       if (existingReport) {
-        let templatesList = _.uniq([
-          // ...existingReport[`${table[0]}_list`].split(","),
-          ...templatesFound,
-        ]);
+        let templatesList = _.uniq([...templatesFound]);
         if (templatesList.length == 1 && templatesList[0] == "")
           templatesList = [];
-
-        // if (templatesList.length < 5) {
-        //   console.log("templatesFound 1", templatesList.length, templatesList);
-        // }
 
         await prisma.exercise_usage_report.update({
           where: { id: existingReport.id },
@@ -107,9 +85,6 @@ async function main() {
       } else {
         const templatesList = _.uniq(templatesFound);
 
-        // if (templatesList.length < 5) {
-        //   console.log("templatesFound 2", templatesList.length, templatesList);
-        // }
         await prisma.exercise_usage_report.create({
           data: {
             exercise_id: exercise.id,
@@ -121,16 +96,9 @@ async function main() {
           },
         });
       }
-      //   },
-      //   { concurrency: baseTables.length }
-      // );
     }
 
     lastId = exercise.id;
-
-    // console.log(
-    //   `exercise ${exercise.id} templatesFound: ${templatesFound.toString()}`
-    // );
   } catch (error) {
     console.log(error);
     process.exit(1);
