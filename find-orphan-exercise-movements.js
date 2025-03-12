@@ -1,5 +1,4 @@
 const { prisma } = require("./db");
-const _ = require("lodash");
 const { isJsonString } = require("./functions");
 
 const baseTables = [
