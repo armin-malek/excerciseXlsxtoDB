@@ -4,8 +4,8 @@ const { isJsonString, isIterable } = require("./functions");
 // let lastId = 0;
 
 const baseTables = [
-  ["exercise_template_day", "templateId"],
-  // ["exercise_day", "programId"],
+  // ["exercise_template_day", "templateId"],
+  ["exercise_day", "programId"],
   // ["corrective_template_day", "templateId"],
   // ["corrective_day", "programId"],
 ];
@@ -82,6 +82,9 @@ async function main() {
               // const replaceable = replacingLists.find(
               //   (x) => x.oldId == movement.action_id
               // );
+              if (movement.action_id == 1197) {
+                console.log("bug row");
+              }
               const replaceable = replacingMap.get(movement.action_id);
               if (replaceable) {
                 // if (movement.action_id == replacingList.oldId) {
@@ -115,6 +118,7 @@ async function main() {
                 //   console.log("movement", movement);
                 // }
                 // console.log("not found");
+
                 newMovementList.push(movement);
               }
             }
@@ -156,9 +160,9 @@ async function main() {
         //   console.log("record not found");
         // }
         // console.log();
-        if (json.includes(":2055,")) {
-          console.log("json", json);
-        }
+        // if (json.includes(":2055,")) {
+        //   console.log("json", json);
+        // }
         await prisma[table[0]].update({
           where: { id: row.id },
           data: {
