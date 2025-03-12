@@ -101,3 +101,11 @@ model action_id_replace_table {
   oldId Int
   newId Int
 }
+
+model orphan_movement_list {
+  id          Int    @id @default(autoincrement())
+  tableName   String
+  id_in_table Int
+  templateId  Int
+  action_id   Int
+}

@@ -99,6 +99,9 @@ async function main() {
           data: {
             [`${table[0]}_list`]: arrayToCommaSpread(templatesList),
             [`${table[0]}_count`]: templatesList.length,
+            title: exercise.title,
+            image: "http://storage.morabiha.com" + exercise.image,
+            video: "http://storage.morabiha.com" + exercise.video,
           },
         });
       } else {
