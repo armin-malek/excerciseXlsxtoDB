@@ -5,9 +5,9 @@ let lastId = 0;
 
 const baseTables = [
   ["exercise_template_day", "templateId"],
-  ["exercise_day", "programId"],
-  ["corrective_template_day", "templateId"],
-  ["corrective_day", "programId"],
+  // ["exercise_day", "programId"],
+  // ["corrective_template_day", "templateId"],
+  // ["corrective_day", "programId"],
 ];
 
 let records = {};
