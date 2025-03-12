@@ -111,9 +111,9 @@ async function main() {
                 // console.log(obj);
                 newMovementList.push(obj);
               } else {
-                if (JSON.stringify(movement).includes(":2055,")) {
-                  console.log("movement", movement);
-                }
+                // if (JSON.stringify(movement).includes(":2055,")) {
+                //   console.log("movement", movement);
+                // }
                 // console.log("not found");
                 newMovementList.push(movement);
               }
