@@ -3,9 +3,9 @@ const { isJsonString, convertExcelToJson } = require("./functions");
 const ExcelJS = require("exceljs");
 
 const baseTables = [
-  // ["exercise_template_day", "templateId"],
-  // ["exercise_day", "programId"],
-  // ["corrective_template_day", "templateId"],
+  ["exercise_template_day", "templateId"],
+  ["exercise_day", "programId"],
+  ["corrective_template_day", "templateId"],
   ["corrective_day", "programId"],
 ];
 
