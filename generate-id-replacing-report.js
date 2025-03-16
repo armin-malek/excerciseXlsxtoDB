@@ -58,7 +58,7 @@ async function main() {
       let result = {
         oldId: row.oldId,
         oldName: exercisesMap.get(row.oldId)?.title,
-        newId: newId ? row.newId : undefined,
+        newId: row?.newId ? row?.newId : undefined,
         newName: exercisesMap.get(row.newId)?.title || undefined,
         oldIdTotalUsage: sum,
       };
