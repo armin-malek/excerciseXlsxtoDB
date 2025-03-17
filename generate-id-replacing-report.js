@@ -50,11 +50,15 @@ async function main() {
       const oldIdTotalUsage = await prisma.exercise_usage_report.findUnique({
         where: { exercise_id: row.oldId },
       });
-      let sum =
-        oldIdTotalUsage.corrective_day_count +
-        oldIdTotalUsage.corrective_template_day_count +
-        oldIdTotalUsage.exercise_day_count +
-        oldIdTotalUsage.exercise_template_day_count;
+      let sum = 0;
+      if (oldIdTotalUsage) {
+        sum =
+          oldIdTotalUsage.corrective_day_count +
+          oldIdTotalUsage.corrective_template_day_count +
+          oldIdTotalUsage.exercise_day_count +
+          oldIdTotalUsage.exercise_template_day_count;
+      }
+
       let result = {
         oldId: row.oldId,
         oldName: exercisesMap.get(row.oldId)?.title,
